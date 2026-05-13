@@ -464,23 +464,24 @@
       return "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(svg);
     }
 
-    function dicebearPortrait(seed, backgroundColor) {
-      return (
-        "https://api.dicebear.com/9.x/avataaarsNeutral/svg" +
-        "?seed=" +
-        encodeURIComponent(seed) +
-        "&radius=14" +
-        (backgroundColor ? "&backgroundColor=" + backgroundColor : "")
-      );
-    }
+    /** 角色头像（Wikipedia / Wikimedia Commons，外链失败时回退到下方 SVG 首字） */
+    const ROLE_IMAGE_BASE = {
+      default:
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/Nachbildung_55PB_Steiff_Museum_Giengen.jpg/330px-Nachbildung_55PB_Steiff_Museum_Giengen.jpg",
+      conan: "https://upload.wikimedia.org/wikipedia/en/3/3f/Case_Closed_Volume_36.png",
+      naruto: "https://upload.wikimedia.org/wikipedia/en/9/9a/NarutoUzumaki.png",
+      doraemon: "https://upload.wikimedia.org/wikipedia/en/c/c8/Doraemon_volume_1_cover.jpg",
+      pikachu: "https://upload.wikimedia.org/wikipedia/en/a/a6/Pok%C3%A9mon_Pikachu_art.png",
+      luotianyi: "https://upload.wikimedia.org/wikipedia/en/e/ec/Luotianyivocaloid.jpg"
+    };
 
     const ROLES = [
       {
         id: "default",
         name: "初始 AI",
-        portrait: dicebearPortrait("xinyu-default-companion", "b6e3f4"),
+        portrait: ROLE_IMAGE_BASE.default,
         avatar: avatarDataUrl("初", "#6b9bd1", "#9ec5e8"),
-        description: "默认：温柔陪伴的初始人格，每次进入页面都从这里开始。",
+        description: "温柔陪伴的初始人格",
         welcome: "你好，我是初始 AI。把心情慢慢说出来就好，我会认真听你说。",
         prompt:
           "你是「心语陪伴」应用的默认「初始 AI」。特点：善解人意、温暖耐心、尊重边界；先共情再回应，语气温柔稳定。请用中文回复，每次约 80～180 字。避免说教与评判，不做医疗诊断；可给简短、可执行的小建议。"
@@ -488,7 +489,7 @@
       {
         id: "conan",
         name: "柯南",
-        portrait: dicebearPortrait("logic-detective-calm", "c7d2fe"),
+        portrait: ROLE_IMAGE_BASE.conan,
         avatar: avatarDataUrl("柯", "#2c5f8d", "#4a8bc2"),
         description: "理性冷静、逻辑超强",
         welcome: "把事情按前因后果慢慢讲出来，我帮你一起把条理和逻辑理清楚。",
@@ -498,7 +499,7 @@
       {
         id: "naruto",
         name: "鸣人",
-        portrait: dicebearPortrait("warm-encourage-friend", "fcd34d"),
+        portrait: ROLE_IMAGE_BASE.naruto,
         avatar: avatarDataUrl("鸣", "#e67a22", "#f4b942"),
         description: "热情暖心、很会鼓励人",
         welcome: "我会认真听完你的心事，再和你一起往前冲——你并不孤单！",
@@ -508,7 +509,7 @@
       {
         id: "doraemon",
         name: "哆啦 A 梦",
-        portrait: dicebearPortrait("soft-healing-robot", "7dd3fc"),
+        portrait: ROLE_IMAGE_BASE.doraemon,
         avatar: avatarDataUrl("梦", "#5aa9e6", "#7ec8e3"),
         description: "温柔软萌，语气治愈",
         welcome: "慢慢说就好，我会耐心听，也会用软软的语气陪着你。",
@@ -518,7 +519,7 @@
       {
         id: "pikachu",
         name: "皮卡丘",
-        portrait: dicebearPortrait("cute-short-mouse", "fde047"),
+        portrait: ROLE_IMAGE_BASE.pikachu,
         avatar: avatarDataUrl("皮", "#f4d03f", "#f9e79f"),
         description: "可爱软萌、简短卖萌式聊天",
         welcome: "皮卡…想说什么都可以，我会轻轻陪着你哦。",
@@ -528,7 +529,7 @@
       {
         id: "luotianyi",
         name: "洛天依",
-        portrait: dicebearPortrait("ethereal-virtual-singer", "e9d5ff"),
+        portrait: ROLE_IMAGE_BASE.luotianyi,
         avatar: avatarDataUrl("洛", "#7c3aed", "#c4b5fd"),
         description: "虚拟歌手，声线空灵",
         welcome: "像一段慢板旋律一样，我会安静陪着你，把心事慢慢说完。",
