@@ -1,0 +1,9 @@
+{
+  "name": "my-ai-lingxin",
+  "version": "1.0.0",
+  "private": true,
+  "description": "心语陪伴 - 服务端代理 DeepSeek Key",
+  "scripts": {
+    "start": "node server.js"
+  }
+}

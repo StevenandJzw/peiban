@@ -254,12 +254,10 @@
       <div class="brand">心语陪伴</div>
       <p class="subtitle">把你的心情轻轻说出来，这里有一位温柔、耐心、理解你的 AI 朋友。</p>
 
-      <div class="settings-title">设置</div>
-      <label for="apiKeyInput">DeepSeek API Key</label>
-      <input id="apiKeyInput" type="password" placeholder="请输入 sk-..." autocomplete="off">
-      <button id="saveKeyBtn" class="btn" type="button">保存 API Key</button>
+      <div class="settings-title">系统说明</div>
       <div id="keyStatus" class="status"></div>
-      <p class="hint">API Key 仅保存在当前浏览器（LocalStorage），不会上传到其他地方。</p>
+      <p class="hint">无需输入 API Key。系统在服务端安全调用模型接口，不在前端暴露密钥。</p>
+      <p class="hint">仅保留本次会话的短期记忆：不做长期存储、不留存聊天内容，关闭页面后立即清空。</p>
     </aside>
 
     <section class="chat-area">
@@ -274,14 +272,11 @@
   </div>
 
   <script>
-    const STORAGE_KEY = "deepseek_api_key";
-    const API_URL = "https://api.deepseek.com/chat/completions";
+    const API_URL = "/api/chat";
 
     const messagesEl = document.getElementById("messages");
     const inputEl = document.getElementById("messageInput");
     const sendBtn = document.getElementById("sendBtn");
-    const apiKeyInput = document.getElementById("apiKeyInput");
-    const saveKeyBtn = document.getElementById("saveKeyBtn");
     const keyStatusEl = document.getElementById("keyStatus");
 
     const chatHistory = [];
@@ -321,34 +316,17 @@
       keyStatusEl.className = "status" + (type ? " " + type : "");
     }
 
-    function saveApiKey() {
-      const key = apiKeyInput.value.trim();
-      if (!key) {
-        setKeyStatus("请先输入 API Key。", "error");
-        return;
-      }
-      localStorage.setItem(STORAGE_KEY, key);
-      setKeyStatus("API Key 已保存。", "success");
-    }
-
-    function loadApiKey() {
-      const key = localStorage.getItem(STORAGE_KEY) || "";
-      apiKeyInput.value = key;
-      if (key) {
-        setKeyStatus("已检测到已保存的 API Key。", "success");
-      }
+    function clearSessionMemory() {
+      chatHistory.length = 0;
+      inputEl.value = "";
+      messagesEl.innerHTML = "";
+      setKeyStatus("会话已清空。", "success");
     }
 
     async function sendMessage() {
       if (isSending) return;
       const userText = inputEl.value.trim();
       if (!userText) return;
-
-      const apiKey = (localStorage.getItem(STORAGE_KEY) || "").trim();
-      if (!apiKey) {
-        setKeyStatus("请先在左侧设置并保存 DeepSeek API Key。", "error");
-        return;
-      }
 
       isSending = true;
       sendBtn.disabled = true;
@@ -381,8 +359,7 @@
         const response = await fetch(API_URL, {
           method: "POST",
           headers: {
-            "Content-Type": "application/json",
-            Authorization: "Bearer " + apiKey
+            "Content-Type": "application/json"
           },
           body: JSON.stringify(payload)
         });
@@ -428,7 +405,7 @@
           chatHistory.push({ role: "assistant", content: localReply });
         } else {
           typingNode.textContent =
-            "抱抱你，我刚刚有点走神了，暂时没能成功回复。请检查 API Key 或网络后再试一次。";
+            "抱抱你，我刚刚有点走神了，暂时没能成功回复。请稍后再试一次。";
         }
         setKeyStatus(errorMessage, "error");
       } finally {
@@ -439,7 +416,6 @@
       }
     }
 
-    saveKeyBtn.addEventListener("click", saveApiKey);
     sendBtn.addEventListener("click", sendMessage);
     inputEl.addEventListener("keydown", (event) => {
       if (event.key === "Enter" && !event.shiftKey) {
@@ -448,8 +424,10 @@
       }
     });
 
+    // 仅保留会话内短期记忆，关闭页面时主动清空。
+    window.addEventListener("beforeunload", clearSessionMemory);
+
     addMessage("ai", "你好呀，很高兴见到你。无论你现在经历着什么，我都愿意认真听你说。");
-    loadApiKey();
   </script>
 </body>
 </html>
