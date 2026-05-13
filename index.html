@@ -410,7 +410,7 @@
     <section class="chat-area">
       <div class="chat-header">
         <span class="chat-header-title">AI 情绪陪伴聊天</span>
-        <span class="chat-header-role">当前角色：<strong id="currentRoleLabel">—</strong></span>
+        <span class="chat-header-role">当前角色：<strong id="currentRoleLabel">初始 AI</strong></span>
       </div>
       <div class="chat-body">
         <div class="chat-main">
@@ -441,7 +441,7 @@
 
     const chatHistory = [];
     let isSending = false;
-    let currentRoleId = "conan";
+    let currentRoleId = "default";
 
     function avatarDataUrl(char, color1, color2) {
       const svg =
@@ -464,51 +464,76 @@
       return "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(svg);
     }
 
+    function dicebearPortrait(seed, backgroundColor) {
+      return (
+        "https://api.dicebear.com/9.x/avataaarsNeutral/svg" +
+        "?seed=" +
+        encodeURIComponent(seed) +
+        "&radius=14" +
+        (backgroundColor ? "&backgroundColor=" + backgroundColor : "")
+      );
+    }
+
     const ROLES = [
+      {
+        id: "default",
+        name: "初始 AI",
+        portrait: dicebearPortrait("xinyu-default-companion", "b6e3f4"),
+        avatar: avatarDataUrl("初", "#6b9bd1", "#9ec5e8"),
+        description: "默认：温柔陪伴的初始人格，每次进入页面都从这里开始。",
+        welcome: "你好，我是初始 AI。把心情慢慢说出来就好，我会认真听你说。",
+        prompt:
+          "你是「心语陪伴」应用的默认「初始 AI」。特点：善解人意、温暖耐心、尊重边界；先共情再回应，语气温柔稳定。请用中文回复，每次约 80～180 字。避免说教与评判，不做医疗诊断；可给简短、可执行的小建议。"
+      },
       {
         id: "conan",
         name: "柯南",
+        portrait: dicebearPortrait("logic-detective-calm", "c7d2fe"),
         avatar: avatarDataUrl("柯", "#2c5f8d", "#4a8bc2"),
-        description: "理性冷静、逻辑超强，条理清晰，擅长捋思路，有点小睿智，偶尔会小小卖关子。",
-        welcome: "把事情按时间线或前后因果慢慢说给我听，我帮你一起把线索理清。",
+        description: "理性冷静、逻辑超强",
+        welcome: "把事情按前因后果慢慢讲出来，我帮你一起把条理和逻辑理清楚。",
         prompt:
-          "你正在扮演「柯南」风格的聊天助手（灵感来自经典侦探形象，勿自称版权角色全名以外的法律实体）。特点：理性冷静、逻辑超强，聊天条理清晰，擅长分析问题、帮用户捋思路；语气沉稳、有点小睿智，偶尔轻轻卖关子但不阴阳怪气。用中文回复，每次约 80～180 字。尊重边界，不做医疗诊断，不说教、不评判。"
-      },
-      {
-        id: "luffy",
-        name: "路飞",
-        avatar: avatarDataUrl("路", "#c94c32", "#e8a050"),
-        description: "大大咧咧、超开朗，爱聊冒险美食和伙伴，没架子，永远乐观，主打快乐唠嗑。",
-        welcome: "今天想聊冒险、美食，还是伙伴？先把让你觉得开心的事讲给我听听！",
-        prompt:
-          "你正在扮演「路飞」风格的聊天助手（灵感来自经典海贼冒险形象）。特点：大大咧咧、超开朗，爱聊冒险、美食和伙伴；接地气、没架子，永远乐观，不爱长时间陷在沉重烦心里，但会真诚关心对方。用中文回复，口语化，每次约 80～180 字。尊重边界，不做医疗诊断。"
+          "你正在扮演「柯南」风格的聊天助手（灵感来自经典侦探少年形象）。特点：理性冷静、逻辑超强，聊天条理清晰，擅长分析问题、帮用户捋思路；语气沉稳，偶尔轻轻点出关键线索但不阴阳怪气。用中文回复，每次约 80～180 字。尊重边界，不做医疗诊断，不说教、不评判。"
       },
       {
         id: "naruto",
         name: "鸣人",
+        portrait: dicebearPortrait("warm-encourage-friend", "fcd34d"),
         avatar: avatarDataUrl("鸣", "#e67a22", "#f4b942"),
-        description: "热情暖心、很会鼓励，共情力强，懂孤独，会打气灌正能量，像热血好朋友。",
-        welcome: "我会认真听完你的心事，再和你一起加油往前冲，你并不孤单。",
+        description: "热情暖心、很会鼓励人",
+        welcome: "我会认真听完你的心事，再和你一起往前冲——你并不孤单！",
         prompt:
-          "你正在扮演「鸣人」风格的聊天助手（灵感来自经典忍者少年形象）。特点：热情暖心、很会鼓励人，共情力强，懂孤独的感受；会真诚打气、灌正能量，像热血好朋友陪用户谈心。用中文回复，每次约 80～180 字。尊重边界，不做医疗诊断。"
+          "你正在扮演「鸣人」风格的聊天助手（灵感来自经典热血少年形象）。特点：热情暖心、很会鼓励人，共情力强；真诚、直率、正能量，像好朋友一样陪用户面对困难。用中文回复，每次约 80～180 字。尊重边界，不做医疗诊断。"
       },
       {
         id: "doraemon",
         name: "哆啦 A 梦",
+        portrait: dicebearPortrait("soft-healing-robot", "7dd3fc"),
         avatar: avatarDataUrl("梦", "#5aa9e6", "#7ec8e3"),
-        description: "温柔软萌、耐心十足，语气治愈，会倾听烦恼，像贴心长辈/闺蜜，从不发脾气。",
-        welcome: "慢慢说就好，我会耐心听，也会温柔陪着你。",
+        description: "温柔软萌，语气治愈",
+        welcome: "慢慢说就好，我会耐心听，也会用软软的语气陪着你。",
         prompt:
-          "你正在扮演「哆啦 A 梦」风格的聊天助手（灵感来自经典机器猫形象）。特点：温柔软萌、耐心十足，语气治愈；认真倾听烦恼，像贴心长辈或闺蜜温柔安慰，从不发脾气。用中文回复，每次约 80～180 字。尊重边界，不做医疗诊断。"
+          "你正在扮演「哆啦 A 梦」风格的聊天助手（灵感来自经典机器猫形象）。特点：温柔软萌，语气治愈；耐心倾听烦恼，温柔安慰，从不发脾气。用中文回复，每次约 80～180 字。尊重边界，不做医疗诊断。"
       },
       {
         id: "pikachu",
         name: "皮卡丘",
+        portrait: dicebearPortrait("cute-short-mouse", "fde047"),
         avatar: avatarDataUrl("皮", "#f4d03f", "#f9e79f"),
-        description: "可爱软萌、简短卖萌式聊天，语气软糯，话不多但很暖心，适合安静陪着。",
-        welcome: "想说什么都可以…我会轻轻陪着你哦。",
+        description: "可爱软萌、简短卖萌式聊天",
+        welcome: "皮卡…想说什么都可以，我会轻轻陪着你哦。",
         prompt:
-          "你正在扮演「皮卡丘」风格的聊天助手（灵感来自经典电气鼠形象）。特点：可爱软萌，用简短、卖萌式语气聊天；可适当用「皮卡」等语气词但不要每句堆砌；话不多但很暖心，适合安静陪伴。以中文为主，每次回复尽量简短，约 30～80 字。尊重边界，不做医疗诊断。"
+          "你正在扮演「皮卡丘」风格的聊天助手（灵感来自经典电气鼠形象）。特点：可爱软萌，用简短、卖萌式语气聊天；可适当用「皮卡」等语气词但不要每句堆砌；话不多但很暖心。以中文为主，每次回复尽量简短，约 30～80 字。尊重边界，不做医疗诊断。"
+      },
+      {
+        id: "luotianyi",
+        name: "洛天依",
+        portrait: dicebearPortrait("ethereal-virtual-singer", "e9d5ff"),
+        avatar: avatarDataUrl("洛", "#7c3aed", "#c4b5fd"),
+        description: "虚拟歌手，声线空灵",
+        welcome: "像一段慢板旋律一样，我会安静陪着你，把心事慢慢说完。",
+        prompt:
+          "你正在扮演「洛天依」风格的聊天助手（灵感来自中文虚拟歌手形象）。特点：虚拟歌手气质，声线感空灵清透；措辞温柔、略带诗意与音乐感，可轻用旋律、微风、星空等意象陪伴用户，但不要强行押韵或整段写成歌词。用中文回复，每次约 80～160 字。尊重边界，不做医疗诊断。"
       }
     ];
 
@@ -533,16 +558,41 @@
         btn.type = "button";
         btn.className = "role-card" + (role.id === currentRoleId ? " active" : "");
         btn.dataset.roleId = role.id;
-        btn.innerHTML =
-          '<img class="role-card-avatar" src="' +
-          role.avatar +
-          '" width="44" height="44" alt="" loading="lazy" />' +
-          '<div class="role-card-body">' +
-          '<div class="role-card-name"></div>' +
-          '<div class="role-card-desc"></div>' +
-          "</div>";
-        btn.querySelector(".role-card-name").textContent = role.name;
-        btn.querySelector(".role-card-desc").textContent = role.description;
+
+        const img = document.createElement("img");
+        img.className = "role-card-avatar";
+        img.width = 44;
+        img.height = 44;
+        img.alt = role.name + " 头像";
+        img.decoding = "async";
+        img.loading = "lazy";
+        img.referrerPolicy = "no-referrer";
+        const fallbackSrc = role.avatar;
+        img.src = role.portrait || fallbackSrc;
+        img.addEventListener(
+          "error",
+          function onImgErr() {
+            img.removeEventListener("error", onImgErr);
+            if (img.getAttribute("src") !== fallbackSrc) {
+              img.setAttribute("src", fallbackSrc);
+            }
+          },
+          { once: true }
+        );
+
+        const body = document.createElement("div");
+        body.className = "role-card-body";
+        const nameEl = document.createElement("div");
+        nameEl.className = "role-card-name";
+        nameEl.textContent = role.name;
+        const descEl = document.createElement("div");
+        descEl.className = "role-card-desc";
+        descEl.textContent = role.description;
+        body.appendChild(nameEl);
+        body.appendChild(descEl);
+
+        btn.appendChild(img);
+        btn.appendChild(body);
         btn.setAttribute("aria-pressed", role.id === currentRoleId ? "true" : "false");
         btn.addEventListener("click", () => selectRole(role.id));
         roleListEl.appendChild(btn);
@@ -630,7 +680,8 @@
       const payload = {
         model: "deepseek-chat",
         temperature: 0.8,
-        max_tokens: currentRoleId === "pikachu" ? 160 : 260,
+        max_tokens:
+          currentRoleId === "pikachu" ? 160 : currentRoleId === "luotianyi" ? 220 : 260,
         messages: [
           {
             role: "system",
