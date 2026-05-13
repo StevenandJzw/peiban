@@ -260,12 +260,24 @@
       overflow: hidden;
     }
 
+    .role-rail-head {
+      flex-shrink: 0;
+    }
+
     .role-rail-title {
-      padding: 12px 12px 8px;
+      padding: 12px 12px 2px;
       font-size: 12px;
       font-weight: 700;
       color: #4f778c;
       letter-spacing: 0.02em;
+    }
+
+    .role-rail-hint {
+      margin: 0;
+      padding: 0 12px 8px;
+      font-size: 11px;
+      line-height: 1.45;
+      color: var(--muted);
     }
 
     .role-list {
@@ -477,8 +489,13 @@
       }
 
       .role-rail-title {
-        padding: 10px 12px 6px;
+        padding: 10px 12px 2px;
         font-size: 11px;
+      }
+
+      .role-rail-hint {
+        padding: 0 12px 8px;
+        font-size: 10px;
       }
 
       .role-list {
@@ -600,7 +617,10 @@
           </div>
         </div>
         <aside id="roleRail" class="role-rail" aria-label="AI 角色切换">
-          <div class="role-rail-title">AI 角色栏</div>
+          <div class="role-rail-head">
+            <div class="role-rail-title">AI 角色栏</div>
+            <p class="role-rail-hint">点击即可切换不同AI人格</p>
+          </div>
           <div id="roleList" class="role-list"></div>
         </aside>
       </div>
