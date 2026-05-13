@@ -4,9 +4,20 @@ export default async function handler(req, res) {
     return;
   }
 
-  const apiKey = process.env.DEEPSEEK_API_KEY;
+  const apiKey = (
+    process.env.DEEPSEEK_API_KEY ||
+    process.env.DEEPSEEK_KEY ||
+    process.env.DEEPSEEK_TOKEN ||
+    ""
+  ).trim();
+
   if (!apiKey) {
-    res.status(500).json({ error: { message: "服务端未配置 DEEPSEEK_API_KEY" } });
+    res.status(500).json({
+      error: {
+        message:
+          "服务端未配置 DEEPSEEK_API_KEY。请在 Vercel 项目 Settings → Environment Variables 中为 Production 添加该变量并重新部署。"
+      }
+    });
     return;
   }
 

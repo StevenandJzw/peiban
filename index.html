@@ -378,6 +378,12 @@
           if (response.status === 402) {
             throw new Error("DeepSeek 余额不足（402）。请先充值或更换有额度的 Key。");
           }
+          if (
+            response.status === 500 &&
+            (errorBody.includes("DEEPSEEK_API_KEY") || errorBody.includes("未配置"))
+          ) {
+            throw new Error("SERVER_KEY_MISSING");
+          }
           throw new Error("请求失败（" + response.status + "）: " + errorBody);
         }
 
@@ -399,15 +405,23 @@
         chatHistory.push({ role: "assistant", content: aiText });
       } catch (err) {
         const errorMessage = err && err.message ? err.message : "请求失败，请稍后重试。";
-        if (errorMessage.includes("余额不足")) {
+        if (errorMessage.includes("余额不足") || errorMessage === "SERVER_KEY_MISSING") {
           const localReply = generateLocalComfortReply(userText);
           typingNode.textContent = localReply + "\n\n（当前已切换为本地陪伴模式）";
           chatHistory.push({ role: "assistant", content: localReply });
+          if (errorMessage === "SERVER_KEY_MISSING") {
+            setKeyStatus(
+              "云端服务未就绪，已使用本地陪伴回复。管理员请在 Vercel 配置 DEEPSEEK_API_KEY 后重新部署。",
+              "error"
+            );
+          } else {
+            setKeyStatus(errorMessage, "error");
+          }
         } else {
           typingNode.textContent =
             "抱抱你，我刚刚有点走神了，暂时没能成功回复。请稍后再试一次。";
+          setKeyStatus(errorMessage, "error");
         }
-        setKeyStatus(errorMessage, "error");
       } finally {
         isSending = false;
         sendBtn.disabled = false;

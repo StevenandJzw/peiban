@@ -1,10 +1,20 @@
 export async function onRequestPost(context) {
   const { request, env } = context;
-  const apiKey = env.DEEPSEEK_API_KEY;
+  const apiKey = (
+    env.DEEPSEEK_API_KEY ||
+    env.DEEPSEEK_KEY ||
+    env.DEEPSEEK_TOKEN ||
+    ""
+  ).trim();
 
   if (!apiKey) {
     return Response.json(
-      { error: { message: "服务端未配置 DEEPSEEK_API_KEY" } },
+      {
+        error: {
+          message:
+            "服务端未配置 DEEPSEEK_API_KEY。请在 Cloudflare Pages 项目 Settings → Environment variables 中添加并重新部署。"
+        }
+      },
       { status: 500 }
     );
   }
